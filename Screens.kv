@@ -1,0 +1,211 @@
+#:kivy 1.8.0
+#:import rgba kivy.utils.rgba
+#:import F kivy.factory.Factory
+#:import Window kivy.core.window
+<LogScreen>:
+	canvas:
+		Color:
+			rgba: rgba("#933030")
+		Rectangle:
+			pos: self.pos
+			size: self.size
+	BoxLayout:
+		orientation: 'vertical'
+		padding: 200
+		spacing: 5
+		Label:
+			font_size: 42
+			text: "Entry password"
+		Label:
+			id: label_passw_erro
+			text: ""
+		TextInput:
+			id: password
+			font_size: 25
+			password: True
+			multiline: False
+		GridLayout:
+			cols: 2
+			spacing: 9
+			Button:
+				text: "Login"
+				on_press:
+					if app.pass_r(password.text) == False: label_passw_erro.text = "Неверный Пароль"
+					else: label_passw_erro.text = ""
+				background_color: rgba("#3685d3")
+
+			Button:
+				text: "Registr"
+				on_press: root.manager.current = "registr"
+				background_color: rgba("#3685d3")
+
+
+<MainScreen>:
+	canvas:
+		Color:
+			rgba: rgba("#933030")
+		Rectangle:
+			pos: self.pos
+			size: self.size
+	BoxLayout:
+		size_hint: 1,1
+		orientation: "vertical"
+		spacing: 6
+		GridLayout:
+			cols: 2
+			size_hint: 0.1, 0.1
+			Button:
+				text: "Exit"
+				background_color: rgba("#3685d6")
+				on_press: app.get_running_app().stop()
+
+			Button:
+				text: "Save"
+				background_color: rgba("#3685d6")
+				on_press: app.database_save(main_text_input.text)
+		
+		TextInput:
+			id: main_text_input
+			font_size: 32
+			text: app.database_read()
+
+		GridLayout:
+			cols: 3
+			size_hiht: 1,0.1
+			size_hint_y: None
+			spacing: 2
+			Label:
+				text: "Название Сервиса"
+			
+			Label:
+				text: "Логин"
+			
+			Label:
+				text: "Пароль"
+			
+			TextInput:
+				id: service_text_input
+				font_size: 28
+
+			TextInput:
+				id: log_text_input
+				font_size: 28
+
+			TextInput:
+				id: passwd_text_input
+				font_size: 28
+
+		BoxLayout:
+			orientation: "horizontal"
+			size_hint: 1, 0.1
+			size_hint_y: None
+			Button:
+				text: "Add"
+				size_hint: 1, 0.1
+				size_hint_y: None
+				on_press: main_text_input.text += service_text_input.text + " : " + log_text_input.text + " : " + passwd_text_input.text + "\n"
+				background_color: rgba("#3685d3")
+
+
+			Button:
+				text: "Clear"
+				size_hint: 1, 0.1
+				size_hint_y: None
+				on_press: main_text_input.text = ''
+				background_color: rgba("#3685d3")
+
+
+
+<Manager>:
+	id: screen_manger
+
+	log_screen: log_screen
+	main_screen: main_screen
+	regist_screen: registr_screen
+
+	LogScreen:
+		id: log_screen
+		name: 'log'
+		manager: screen_manger
+
+	MainScreen:
+		id: main_screen
+		name: 'main'
+		manager: screen_manger
+
+	RegistrScreen:
+		id: registr_screen
+		name: 'registr'
+		manager: screen_manger
+ 
+<RegistrScreen>:
+	canvas:
+		Color:
+			rgba: rgba("#933030")
+		Rectangle:
+			pos: self.pos
+			size: self.size
+	BoxLayout:
+		orientation: "vertical"
+		GridLayout:
+			cols: 3
+			padding: 160
+			spacing: 20
+
+			Label:
+				text: "Имя"
+				font_size: 32
+
+			TextInput:
+				id: name
+				multiline: False
+				font_size: 32
+			
+			Label:
+				id: name_erro
+				text: ''
+				font_size: 12
+			
+			Label:
+				text: "Фамилия"
+				font_size: 32
+
+			TextInput:
+				id: lastname
+				multiline: False
+				font_size: 32
+			
+			Label:
+				id: lastname_erro
+				text: ''
+				font_size: 12
+
+			Label:
+				text: "Пароль"
+				font_size: 32
+
+			TextInput:
+				id: passwd
+				password: True
+				multiline: False
+				font_size: 32
+
+			Label:
+				id: passwd_erro
+				text: ''
+				font_size: 12
+
+		Button:
+			text: "Регистрация"
+			size_hint: (1,0.1)
+			on_press:
+				if name.text == '': name_erro.text = "Заполните поле"
+				else: name_erro.text = ''
+				if lastname.text == '': lastname_erro.text = "Заполните поле"
+				else: lastname_erro.text = ''
+				if passwd.text == '': passwd_erro.text= "Заполните поле"
+				else: passwd_erro.text = ''
+				if name_erro.text == '' and lastname_erro.text == '' and passwd_erro.text == '': app.add_account(name.text, lastname.text, passwd.text)
+			background_color: rgba("#3685d3")
+
+
