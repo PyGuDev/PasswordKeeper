@@ -1,10 +1,11 @@
 from PyQt5 import QtCore, QtWidgets as QW, QtGui, uic
 from controller import ControllerDb
+import ui_login, ui_main, ui_singup
 
 
-FormSingUp, _ = uic.loadUiType('singup.ui')
-FormSingIn, _ = uic.loadUiType('login.ui')
-FormMain, _ = uic.loadUiType('main.ui')
+FormSingUp = ui_singup.Ui_AuthForm
+FormSingIn = ui_login.Ui_AuthForm
+FormMain = ui_main.Ui_MainWindow
 
 
 class MainWindow(QW.QMainWindow, FormMain):
@@ -112,6 +113,7 @@ class SingUpWindow(QW.QWidget, FormSingUp):
     def sing_up(self):
         if self.input_password.text() == '' and self.input_login.text() == '':
             self.error_label.setText("Заполните все поля.")
+            return 0
         if self.check_for_russian(self.input_password.text()):
             self.error_label.setText("Пароль не должен содеражать кирилицу.")
         elif self.check_for_russian(self.input_login.text()):
