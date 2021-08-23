@@ -1,9 +1,9 @@
-from PyQt5 import QtCore, QtWidgets as QW, QtGui, uic
+from PyQt6 import QtCore, QtWidgets as QW, QtGui, uic
 from controller import ControllerDb
-import ui_login, ui_main, ui_singup
+import ui_login, ui_main, ui_signup
 
 
-FormSingUp = ui_singup.Ui_AuthForm
+FormSingUp = ui_signup.Ui_AuthForm
 FormSingIn = ui_login.Ui_AuthForm
 FormMain = ui_main.Ui_MainWindow
 
