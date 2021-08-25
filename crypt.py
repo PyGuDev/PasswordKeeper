@@ -3,13 +3,13 @@ import base64
 
 
 class Crypt:
-    def __init__(self, key: str):
+    def __init__(self, key: bytes):
         self._key: bytes = self._convert_key(key)
         self._f = Fernet(self._key)
 
     @staticmethod
-    def _convert_key(key: str) -> bytes:
-        return base64.urlsafe_b64encode(key.encode()[:32])
+    def _convert_key(key: bytes) -> bytes:
+        return base64.urlsafe_b64encode(key[:32])
 
     def encrypt(self, value: str) -> str:
         encrypted_value = self._f.encrypt(value.encode())
