@@ -5,6 +5,7 @@ import os
 from crypt import Crypt
 from sqlite3 import Cursor, Connection
 from typing import Optional, Tuple
+from helpers import Account
 
 
 class ControllerDb:
@@ -78,13 +79,14 @@ class ControllerDb:
         db = sqlite3.connect(self._db_name)
         cursor = db.cursor()
         cursor.execute("SELECT * FROM account")
-        accounts_list = cursor.fetchall()
+        accounts_data_list = cursor.fetchall()
         db.close()
-        for account in accounts_list:
-            if login == account[1]:
-                _, key = self._hashing(password, account[2])
-                if key.hex() == account[3]:
-                    self._USER_ID = account[0]
+        for account_data in accounts_data_list:
+            account = Account(account_data)
+            if login == account.login:
+                _, key = self._hashing(password, account.salt)
+                if key.hex() == account.key:
+                    self._USER_ID = account.id
                     self._init_crypt(key)
                     return self._USER_ID
 
