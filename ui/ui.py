@@ -39,10 +39,10 @@ class MainWindow(QW.QMainWindow, FormMain):
     def add_service(self):
         if self.name_service.text() == '' or self.email_service.text() == '' or self.passw_service.text() == '':
             msgBox = QW.QMessageBox()
-            msgBox.setIcon(QW.QMessageBox.Information)
-            msgBox.setText("Заполните все поля")
-            msgBox.setWindowTitle("Предупреждение")
-            msgBox.setStandardButtons(QW.QMessageBox.Ok)
+            msgBox.setIcon(QW.QMessageBox.Icon.Information)
+            msgBox.setText("Предупреждение")
+            msgBox.setInformativeText("Заполните все поля")
+            msgBox.setStandardButtons(QW.QMessageBox.StandardButton.Ok)
             msgBox.exec()
         else:
             self.controller.add_service(self.user_id, self.name_service.text(), self.email_service.text(), self.passw_service.text())
