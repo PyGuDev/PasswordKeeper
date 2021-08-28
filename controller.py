@@ -87,7 +87,8 @@ class ControllerDb:
                 _, key = self._hashing(password, account.salt)
                 if key.hex() == account.key:
                     self._USER_ID = account.id
-                    self._init_crypt(key)
+                    _, key2 = self._hashing(account.login, account.salt)
+                    self._init_crypt(key2)
                     return self._USER_ID
 
     def _encrypting_service_data(self, name: str, email: str, password: str) -> tuple:
