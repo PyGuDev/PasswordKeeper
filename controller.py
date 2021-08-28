@@ -136,7 +136,7 @@ class ControllerDb:
             service_name, email, password)
         cursor.execute("UPDATE service SET name='{}', email='{}', password='{}' WHERE id={}".format(
             encrypted_name, encrypted_email, encrypted_password, service_id))
-        db.execute()
+        db.commit()
         db.close()
 
     def del_service(self, service_id: int):
