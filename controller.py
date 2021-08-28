@@ -52,7 +52,6 @@ class ControllerDb:
             b_salt = os.urandom(32)
         else:
             b_salt: bytes = bytes.fromhex(salt)
-            print(b_salt)
         b_value: bytes = value.encode('utf-8')
         key = hashlib.pbkdf2_hmac(
             'sha256',
@@ -84,7 +83,6 @@ class ControllerDb:
         for account in accounts_list:
             if login == account[1]:
                 _, key = self._hashing(password, account[2])
-                print(key.hex(), account[3])
                 if key.hex() == account[3]:
                     self._USER_ID = account[0]
                     self._init_crypt(key)
