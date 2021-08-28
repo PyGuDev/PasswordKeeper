@@ -90,11 +90,30 @@ class ControllerDb:
                     self._init_crypt(key)
                     return self._USER_ID
 
+    def _encrypting_service_data(self, name: str, email: str, password: str) -> tuple:
+        encrypted_name = self._crypt.encrypt(name)
+        encrypted_email = self._crypt.encrypt(email)
+        encrypted_password = self._crypt.encrypt(password)
+        return encrypted_name, encrypted_email, encrypted_password
+
+    def _decrypting_service_data(self, data_list: list) -> list:
+        new_data_list = []
+        for data in data_list:
+            new_data = [
+                self._crypt.decrypt(data[1]),
+                self._crypt.decrypt(data[2]),
+                self._crypt.decrypt(data[3])
+            ]
+            new_data_list.append(new_data)
+        return new_data_list
+
     def add_service(self, user_id: int, name_service: str, email: str, password: str):
         db = sqlite3.connect(self._db_name)
         cursor = db.cursor()
+        encrypted_name, encrypted_email, encrypted_password = self._encrypting_service_data(
+            name_service, email, password)
         cursor.execute("INSERT INTO service(account_id, name, email, password) VALUES({}, '{}', '{}', '{}')".format(
-            user_id, name_service, email, password))
+            user_id, encrypted_name, encrypted_email, encrypted_password))
         db.commit()
         db.close()
 
@@ -105,13 +124,16 @@ class ControllerDb:
             user_id))
         result = cursor.fetchall()
         db.close()
-        return result
+        decrypted_result = self._decrypting_service_data(result)
+        return decrypted_result
 
     def update_service(self, service_id: int, service_name: str, email: str, password: str):
         db = sqlite3.connect(self._db_name)
         cursor = db.cursor()
+        encrypted_name, encrypted_email, encrypted_password = self._encrypting_service_data(
+            service_name, email, password)
         cursor.execute("UPDATE service SET name='{}', email='{}', password='{}' WHERE id={}".format(
-            service_name, email, password, service_id))
+            encrypted_name, encrypted_email, encrypted_password, service_id))
         db.execute()
         db.close()
 
