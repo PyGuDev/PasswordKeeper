@@ -24,14 +24,14 @@ class MainWindow(QW.QMainWindow, FormMain):
 
     def show_service(self):
         result = self.controller.show_service(self.user_id)
-        if result == []:
+        if not result:
             return 0
         self.list_service.setRowCount(len(result))
         self.list_service.setColumnCount(len(result[0]))
         row, column = 0, 0
         for items in result:
             for item in items:
-                self.list_service.setItem(row, column, QW.QTableWidgetItem(str(item) if type(item)== int else item))
+                self.list_service.setItem(row, column, QW.QTableWidgetItem(str(item) if type(item) == int else item))
                 column += 1
             row += 1
             column = 0
@@ -45,7 +45,8 @@ class MainWindow(QW.QMainWindow, FormMain):
             msgBox.setStandardButtons(QW.QMessageBox.StandardButton.Ok)
             msgBox.exec()
         else:
-            self.controller.add_service(self.user_id, self.name_service.text(), self.email_service.text(), self.passw_service.text())
+            self.controller.add_service(
+                self.user_id, self.name_service.text(), self.email_service.text(), self.passw_service.text())
             self.show_service()
 
     def del_service(self):
@@ -55,11 +56,23 @@ class MainWindow(QW.QMainWindow, FormMain):
             self.list_service.removeRow(item.row())
 
 
-
-
-class LoginWindow(QW.QWidget, FormSingIn):
+class BaseAuthWindow(QW.QWidget):
     def __init__(self, parent=None):
         QW.QWidget.__init__(self, parent)
+
+    @staticmethod
+    def check_for_russian(string):
+        alphabet = ["а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т",
+                    "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"]
+        for one_char in string:
+            if one_char in alphabet:
+                return True
+        return False
+
+
+class LoginWindow(BaseAuthWindow, FormSingIn):
+    def __init__(self, parent=None):
+        BaseAuthWindow.__init__(self, parent)
         self.setupUi(self)
         ico = QtGui.QIcon('favicon.png')
         self.setWindowIcon(ico)
@@ -92,18 +105,10 @@ class LoginWindow(QW.QWidget, FormSingIn):
         self.main_screen.show()
         self.close()
 
-    def check_for_russian(self, string):
-        alphabet = ["а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т",
-                    "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"]
-        for one_char in string:
-            if one_char in alphabet:
-                return True
-        return False
 
-
-class SingUpWindow(QW.QWidget, FormSingUp):
+class SingUpWindow(BaseAuthWindow, FormSingUp):
     def __init__(self, parent=None):
-        QW.QWidget.__init__(self, parent)
+        BaseAuthWindow.__init__(self, parent)
         self.setupUi(self)
         ico = QtGui.QIcon('favicon.png')
         self.setWindowIcon(ico)
@@ -130,11 +135,3 @@ class SingUpWindow(QW.QWidget, FormSingUp):
         self.login_screen = LoginWindow()
         self.login_screen.show()
         self.close()
-
-    def check_for_russian(self, string):
-        alphabet = ["а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т",
-                    "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"]
-        for one_char in string:
-            if one_char in alphabet:
-                return True
-        return False
