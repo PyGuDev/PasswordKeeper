@@ -1,8 +1,8 @@
 from PyQt6 import QtWidgets as QW, QtGui
 
-import ui_login
-import ui_main
-import ui_signup
+from . import ui_login
+from . import ui_main
+from . import ui_signup
 from controller import ControllerDb
 
 FormSingUp = ui_signup.Ui_AuthForm
