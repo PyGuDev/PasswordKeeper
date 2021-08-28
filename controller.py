@@ -101,6 +101,7 @@ class ControllerDb:
         new_data_list = []
         for data in data_list:
             new_data = [
+                data[0],
                 self._crypt.decrypt(data[1]),
                 self._crypt.decrypt(data[2]),
                 self._crypt.decrypt(data[3])
