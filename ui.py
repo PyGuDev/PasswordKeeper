@@ -9,13 +9,13 @@ FormMain = ui_main.Ui_MainWindow
 
 
 class MainWindow(QW.QMainWindow, FormMain):
-    def __init__(self, parent=None, user_id=-1):
+    def __init__(self, controller: ControllerDb, parent=None, user_id=-1):
         QW.QMainWindow.__init__(self, parent)
         self.setupUi(self)
         ico = QtGui.QIcon('favicon.png')
         self.setWindowIcon(ico)
         self.user_id = user_id
-        self.controller = ControllerDb()
+        self.controller = controller
         self.show_service()
         self.add_btn.clicked.connect(self.add_service)
         self.del_btn.clicked.connect(self.del_service)
@@ -86,7 +86,7 @@ class LoginWindow(QW.QWidget, FormSingIn):
         self.close()
 
     def open_main(self, id):
-        self.main_screen = MainWindow(user_id=id)
+        self.main_screen = MainWindow(user_id=id, controller=self.controller)
         self.main_screen.show()
         self.close()
 
