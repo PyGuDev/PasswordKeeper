@@ -21,6 +21,15 @@ class MainWindow(QW.QMainWindow, FormMain):
         self.show_service()
         self.add_btn.clicked.connect(self.add_service)
         self.del_btn.clicked.connect(self.del_service)
+        self.list_service.itemChanged.connect(self.change_service)
+
+    def change_service(self, item):
+        row = item.row()
+        service_id = self.list_service.item(row, 0).text()
+        service_name = self.list_service.item(row, 1).text()
+        service_email = self.list_service.item(row, 2).text()
+        service_password = self.list_service.item(row, 3).text()
+        self.controller.update_service(service_id, service_name, service_email, service_password)
 
     def show_service(self):
         result = self.controller.show_service(self.user_id)
