@@ -1,11 +1,12 @@
-from PyQt6 import QtWidgets as QW
-from ui import SingUpWindow, LoginWindow, MainWindow
 import sys
+
+from PyQt6 import QtWidgets as QW
+from ui import ui
 
 
 def main():
     app = QW.QApplication(sys.argv)
-    window = LoginWindow()
+    window = ui.LoginWindow()
     window.show()
     sys.exit(app.exec())
 
