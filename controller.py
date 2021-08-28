@@ -2,16 +2,18 @@ import sqlite3
 import hashlib
 import os
 
+from crypt import Crypt
 from sqlite3 import Cursor, Connection
-from typing import Optional
+from typing import Optional, Tuple
 
 
 class ControllerDb:
     _USER_ID: int = -1
 
     def __init__(self):
-        self._db_name = 'data.db'
+        self._db_name: str = 'data.db'
         self._create_first_model()
+        self._crypt: Optional[Crypt] = None
 
     def _create_first_model(self):
         db_connect = sqlite3.connect(self._db_name)
@@ -19,6 +21,9 @@ class ControllerDb:
         self._create_model_account(_cursor, db_connect)
         self._create_model_service(_cursor, db_connect)
         db_connect.close()
+
+    def _init_crypt(self, key: bytes):
+        self._crypt = Crypt(key)
 
     @staticmethod
     def _create_model_account(cursor: Cursor, db_connect: Connection):
@@ -42,16 +47,20 @@ class ControllerDb:
         db_connect.commit()
 
     @staticmethod
-    def _hashing(value: str, salt: bytes = None) -> tuple:
+    def _hashing(value: str, salt: str = None) -> Tuple[bytes, bytes]:
         if not salt:
-            salt = os.urandom(32)
+            b_salt = os.urandom(32)
+        else:
+            b_salt: bytes = bytes.fromhex(salt)
+            print(b_salt)
+        b_value: bytes = value.encode('utf-8')
         key = hashlib.pbkdf2_hmac(
             'sha256',
-            value.encode('utf-8'),
-            salt,
+            b_value,
+            b_salt,
             10000
         )
-        return salt, key
+        return b_salt, key
 
     def register(self, login: str, password: str) -> bool:
         salt, key = self._hashing(password)
@@ -74,9 +83,11 @@ class ControllerDb:
         db.close()
         for account in accounts_list:
             if login == account[1]:
-                key, _ = self._hashing(password, account[2])
+                _, key = self._hashing(password, account[2])
+                print(key.hex(), account[3])
                 if key.hex() == account[3]:
                     self._USER_ID = account[0]
+                    self._init_crypt(key)
                     return self._USER_ID
 
     def add_service(self, user_id: int, name_service: str, email: str, password: str):
