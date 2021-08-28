@@ -21,17 +21,26 @@ class MainWindow(QW.QMainWindow, FormMain):
         self.show_service()
         self.add_btn.clicked.connect(self.add_service)
         self.del_btn.clicked.connect(self.del_service)
+        self.list_service.itemChanged.connect(self.change_service)
+
+    def change_service(self, item):
+        row = item.row()
+        service_id = self.list_service.item(row, 0).text()
+        service_name = self.list_service.item(row, 1).text()
+        service_email = self.list_service.item(row, 2).text()
+        service_password = self.list_service.item(row, 3).text()
+        self.controller.update_service(service_id, service_name, service_email, service_password)
 
     def show_service(self):
         result = self.controller.show_service(self.user_id)
-        if result == []:
+        if not result:
             return 0
         self.list_service.setRowCount(len(result))
         self.list_service.setColumnCount(len(result[0]))
         row, column = 0, 0
         for items in result:
             for item in items:
-                self.list_service.setItem(row, column, QW.QTableWidgetItem(str(item) if type(item)== int else item))
+                self.list_service.setItem(row, column, QW.QTableWidgetItem(str(item) if type(item) == int else item))
                 column += 1
             row += 1
             column = 0
@@ -39,13 +48,14 @@ class MainWindow(QW.QMainWindow, FormMain):
     def add_service(self):
         if self.name_service.text() == '' or self.email_service.text() == '' or self.passw_service.text() == '':
             msgBox = QW.QMessageBox()
-            msgBox.setIcon(QW.QMessageBox.Information)
-            msgBox.setText("Заполните все поля")
-            msgBox.setWindowTitle("Предупреждение")
-            msgBox.setStandardButtons(QW.QMessageBox.Ok)
+            msgBox.setIcon(QW.QMessageBox.Icon.Information)
+            msgBox.setText("Предупреждение")
+            msgBox.setInformativeText("Заполните все поля")
+            msgBox.setStandardButtons(QW.QMessageBox.StandardButton.Ok)
             msgBox.exec()
         else:
-            self.controller.add_service(self.user_id, self.name_service.text(), self.email_service.text(), self.passw_service.text())
+            self.controller.add_service(
+                self.user_id, self.name_service.text(), self.email_service.text(), self.passw_service.text())
             self.show_service()
 
     def del_service(self):
@@ -55,11 +65,23 @@ class MainWindow(QW.QMainWindow, FormMain):
             self.list_service.removeRow(item.row())
 
 
-
-
-class LoginWindow(QW.QWidget, FormSingIn):
+class BaseAuthWindow(QW.QWidget):
     def __init__(self, parent=None):
         QW.QWidget.__init__(self, parent)
+
+    @staticmethod
+    def check_for_russian(string):
+        alphabet = ["а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т",
+                    "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"]
+        for one_char in string:
+            if one_char in alphabet:
+                return True
+        return False
+
+
+class LoginWindow(BaseAuthWindow, FormSingIn):
+    def __init__(self, parent=None):
+        BaseAuthWindow.__init__(self, parent)
         self.setupUi(self)
         ico = QtGui.QIcon('favicon.png')
         self.setWindowIcon(ico)
@@ -92,18 +114,10 @@ class LoginWindow(QW.QWidget, FormSingIn):
         self.main_screen.show()
         self.close()
 
-    def check_for_russian(self, string):
-        alphabet = ["а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т",
-                    "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"]
-        for one_char in string:
-            if one_char in alphabet:
-                return True
-        return False
 
-
-class SingUpWindow(QW.QWidget, FormSingUp):
+class SingUpWindow(BaseAuthWindow, FormSingUp):
     def __init__(self, parent=None):
-        QW.QWidget.__init__(self, parent)
+        BaseAuthWindow.__init__(self, parent)
         self.setupUi(self)
         ico = QtGui.QIcon('favicon.png')
         self.setWindowIcon(ico)
@@ -130,11 +144,3 @@ class SingUpWindow(QW.QWidget, FormSingUp):
         self.login_screen = LoginWindow()
         self.login_screen.show()
         self.close()
-
-    def check_for_russian(self, string):
-        alphabet = ["а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т",
-                    "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я"]
-        for one_char in string:
-            if one_char in alphabet:
-                return True
-        return False
